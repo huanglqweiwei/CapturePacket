@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+
+
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    // littleproxy及其依赖
+    implementation('net.lightbody.bmp:littleproxy:1.1.0-beta-bmp-17') {
+        exclude group: 'io.netty'
+    }
+    // 日志处理
+    implementation 'org.slf4j:slf4j-log4j12:1.7.21'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.7.6'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.7.6'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.7.6'
+    //证书依赖
+    implementation group: 'org.apache.directory.studio', name: 'org.apache.commons.io', version: '2.4'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.54'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.54'
+    //proxy依赖
+    implementation 'dnsjava:dnsjava:2.1.7'
+    implementation 'com.google.guava:guava:19.0'
+}
