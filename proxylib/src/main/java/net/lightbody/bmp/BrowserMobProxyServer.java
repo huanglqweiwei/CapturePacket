@@ -6,6 +6,7 @@ import com.google.common.collect.MapMaker;
 
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.core.har.Har;
+import net.lightbody.bmp.core.har.HarCallback;
 import net.lightbody.bmp.core.har.HarLog;
 import net.lightbody.bmp.core.har.HarNameVersion;
 import net.lightbody.bmp.core.har.HarPage;
@@ -88,6 +89,8 @@ import io.netty.handler.codec.http.HttpRequest;
  */
 public class BrowserMobProxyServer implements BrowserMobProxy {
     private static final Logger log = LoggerFactory.getLogger(BrowserMobProxyServer.class);
+
+    public HarCallback mHarCallback;
 
     private static final HarNameVersion HAR_CREATOR_VERSION = new HarNameVersion("BrowserMob Proxy", BrowserMobProxyUtil.getVersionString());
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CapturePacket</string>
+    <string name="filter">过滤</string>
+    <string name="exit">退出</string>
 </resources>

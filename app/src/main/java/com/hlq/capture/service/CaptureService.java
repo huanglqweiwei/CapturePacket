@@ -12,6 +12,7 @@ import com.hlq.capture.R;
 import com.hlq.capture.HLog;
 
 import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.core.har.Har;
 import net.lightbody.bmp.proxy.CaptureType;
 
 import java.text.SimpleDateFormat;
@@ -82,6 +83,10 @@ public class CaptureService extends Service implements Runnable {
     public void onLowMemory() {
         super.onLowMemory();
         HLog.w(TAG, "onLowMemory()");
+        Har har = mProxyServer.getHar();
+        if (har != null) {
+            har.getLog().clearAllEntries();
+        }
     }
 
     @Override

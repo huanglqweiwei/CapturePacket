@@ -4,10 +4,14 @@ import android.os.Binder;
 import android.support.annotation.Nullable;
 
 import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.core.har.Har;
+import net.lightbody.bmp.core.har.HarCallback;
+import net.lightbody.bmp.core.har.HarEntry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class CaptureBinder extends Binder {
 
@@ -63,6 +67,14 @@ public class CaptureBinder extends Binder {
             }
         }
         return null;
+    }
+
+    public void setHarCallback(HarCallback callback){
+        mProxyServer.mHarCallback = callback;
+    }
+
+    public List<HarEntry> getHarEntries() {
+        return mProxyServer == null ? null : mProxyServer.getHar().getLog().getEntries();
     }
 
     public interface OnProxyStartedListener {

@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <Button
+
+    <FrameLayout
+        android:id="@+id/fl_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:id="@+id/btn_start"
-        android:text="Start Service"
-        android:textAllCaps="false"/>
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
 
 
 </android.support.constraint.ConstraintLayout>

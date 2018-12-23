@@ -63,7 +63,12 @@ public class HarLog {
             }
         }
         entries.add(entry);
-
+        if (server != null) {
+            if (server.mHarCallback != null) {
+                server.mHarCallback.onAddEntry(entry,entries.size() -1);
+                entry.mHarCallback = server.mHarCallback;
+            }
+        }
     }
 
     public void clearAllEntries(){

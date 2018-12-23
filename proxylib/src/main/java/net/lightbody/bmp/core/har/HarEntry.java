@@ -19,6 +19,7 @@ public class HarEntry {
     private volatile String serverIPAddress;
     private volatile String connection;
     private volatile String comment = "";
+    public HarCallback mHarCallback;
 
     public HarEntry() {
     }
@@ -108,6 +109,9 @@ public class HarEntry {
 
     public void setRequest(HarRequest request) {
         this.request = request;
+        if (mHarCallback != null) {
+            mHarCallback.onEntryChanged(this);
+        }
     }
 
     public HarResponse getResponse() {
@@ -116,6 +120,9 @@ public class HarEntry {
 
     public void setResponse(HarResponse response) {
         this.response = response;
+        if (mHarCallback != null) {
+            mHarCallback.onEntryChanged(this);
+        }
     }
 
     public HarCache getCache() {

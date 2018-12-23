@@ -13,13 +13,16 @@ import android.security.KeyChain;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
+import com.hlq.capture.fragment.CaptureListFragment;
 import com.hlq.capture.service.CaptureBinder;
 import com.hlq.capture.service.CaptureService;
 import com.hlq.capture.util.ProxyUtil;
 import com.hlq.capture.util.SPUtil;
+
+import net.lightbody.bmp.core.har.HarCallback;
 
 import java.io.File;
 
@@ -35,6 +38,13 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fl_content,new CaptureListFragment(),CaptureListFragment.TAG)
+                    .commitAllowingStateLoss();
+        }
+        startProxy();
     }
 
     private void startProxy() {
@@ -103,7 +113,12 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
                 }
             });
         }
-
+        if (result) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(CaptureListFragment.TAG);
+            if (fragment instanceof CaptureListFragment) {
+                ((CaptureListFragment) fragment).onProxyStarted(mBinder);
+            }
+        }
     }
 
     @Override
@@ -147,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         }
 
     }
+
 
 
 }
