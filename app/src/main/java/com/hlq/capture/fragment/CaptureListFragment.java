@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,8 +45,9 @@ public class CaptureListFragment extends Fragment implements HarCallback {
                 mAdapter.setHarEntries(mCaptureBinder.getHarEntries());
             }
             recyclerView.setAdapter(mAdapter);
+            EntryTabDelegate entryTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
+            mAdapter.setEntryTabDelegate(entryTabDelegate);
         }
-
         return mRootView;
     }
 

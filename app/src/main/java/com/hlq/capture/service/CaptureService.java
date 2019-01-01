@@ -1,15 +1,18 @@
 package com.hlq.capture.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.hlq.capture.HLog;
 import com.hlq.capture.MainActivity;
 import com.hlq.capture.R;
-import com.hlq.capture.HLog;
 
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.core.har.Har;
@@ -42,13 +45,22 @@ public class CaptureService extends Service implements Runnable {
     public void onCreate() {
         super.onCreate();
         HLog.w(TAG, "onCreate");
-        Notification notification = new Notification.Builder(this)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentText("Capture is running")
                 .setContentTitle("Capture Packet")
                 .setTicker("Capture")
                 .setWhen(System.currentTimeMillis())
-                .setContentIntent(PendingIntent.getActivity(this,0,new Intent(this, MainActivity.class),0))
+                .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("com.hlq.capture.service.CaptureService", "CaptureService", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                builder.setChannelId(channel.getId());
+            }
+        }
+        Notification notification = builder
                 .build();
         startForeground(R.id.capture_notification, notification);
 
