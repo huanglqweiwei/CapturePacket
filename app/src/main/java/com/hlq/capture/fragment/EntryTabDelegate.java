@@ -1,5 +1,6 @@
 package com.hlq.capture.fragment;
 
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hlq.capture.fragment.headers.HeadersTabHolder;
+import com.hlq.capture.fragment.holder.ContentTabHolder;
 import com.hlq.capture.fragment.holder.TabHolder;
 import com.hlq.capture.fragment.nv.NameValueHolder;
 
@@ -35,7 +37,7 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
     private static final int TYPE_HEADS = 1;
     private static final int TYPE_CONTENT = 2;
     public int mClickedPosition = -1;
-    private CaptureListAdapter mRecAdapter;
+    private CaptureListFragment.RefreshHandler mRefreshHandler;
 
     EntryTabDelegate(TabLayout tabLayout, ViewGroup contentView) {
         mTabLayout = tabLayout;
@@ -100,6 +102,7 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
                     tabHolder = new HeadersTabHolder();
                     break;
                 case TYPE_CONTENT://Content
+                    tabHolder = new ContentTabHolder();
                     break;
             }
             if (mSparseArray == null) {
@@ -152,6 +155,8 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
             holder.onBindHolder(nameValues);
         } else if (viewType == TYPE_HEADS){
             ((HeadersTabHolder)tabHolder).onBindHolder(mHarEntry);
+        } else if (viewType == TYPE_CONTENT){
+            ((ContentTabHolder)tabHolder).onBindHolder(mHarEntry);
         }
     }
 
@@ -189,9 +194,13 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
     }
 
     void showHarEntry(HarEntry harEntry, int clickedPosition) {
-        if (mClickedPosition >= 0 && mClickedPosition < mRecAdapter.getItemCount()) {
-            mRecAdapter.notifyItemChanged(mClickedPosition);
+        if (mClickedPosition != -1 && mRefreshHandler != null) {
+            Message msg = Message.obtain();
+            msg.what = CaptureListFragment.RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
+            msg.arg1 = mClickedPosition;
+            mRefreshHandler.sendMessage(msg);
         }
+
         mClickedPosition = clickedPosition;
         if (mHarEntry != harEntry) {
             mHarEntry = harEntry;
@@ -206,7 +215,9 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
 
     }
 
-    public void setRecAdapter(CaptureListAdapter recAdapter) {
-        mRecAdapter = recAdapter;
+
+
+    public void setRefreshHandler(CaptureListFragment.RefreshHandler refreshHandler) {
+        mRefreshHandler = refreshHandler;
     }
 }

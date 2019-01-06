@@ -49,7 +49,7 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
             }
             recyclerView.setAdapter(mAdapter);
             EntryTabDelegate entryTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
-            entryTabDelegate.setRecAdapter(mAdapter);
+            entryTabDelegate.setRefreshHandler(mHandler);
             mAdapter.setEntryTabDelegate(entryTabDelegate);
         }
         return mRootView;
@@ -97,7 +97,7 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
         return false;
     }
 
-    private static class RefreshHandler extends Handler{
+    public static class RefreshHandler extends Handler{
         public static final int WHAT_HAR_ENTRY_ADD = 0;
         private static final int WHAT_DATA_SET_CHANGE = 1;
         public static final int WHAT_HAR_ENTRY_CHANGED = 2;
@@ -120,7 +120,7 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                     }
                     break;
                 case WHAT_HAR_ENTRY_CHANGED:
-                    if (mFragment.mAdapter != null) {
+                    if (mFragment.mAdapter != null && msg.arg1 >=0 && msg.arg1 < mFragment.mAdapter.getItemCount()) {
                         mFragment.mAdapter.notifyItemChanged(msg.arg1);
                     }
                     break;
