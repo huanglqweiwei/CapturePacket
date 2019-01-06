@@ -6,6 +6,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hlq.capture.fragment.headers.HeadersTabHolder;
 import com.hlq.capture.fragment.holder.TabHolder;
 import com.hlq.capture.fragment.nv.NameValueHolder;
 
@@ -96,6 +97,7 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
                     tabHolder = new NameValueHolder();
                     break;
                 case TYPE_HEADS://Headers
+                    tabHolder = new HeadersTabHolder();
                     break;
                 case TYPE_CONTENT://Content
                     break;
@@ -148,6 +150,8 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
             }
             NameValueHolder holder = (NameValueHolder) tabHolder;
             holder.onBindHolder(nameValues);
+        } else if (viewType == TYPE_HEADS){
+            ((HeadersTabHolder)tabHolder).onBindHolder(mHarEntry);
         }
     }
 
