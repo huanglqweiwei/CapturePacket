@@ -7,10 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,7 +26,7 @@ import net.lightbody.bmp.core.har.HarEntry;
  * Created by hlq on 2018/12/22 0022.
  */
 
-public class CaptureListFragment extends Fragment implements HarCallback {
+public class CaptureListFragment extends Fragment implements HarCallback, Toolbar.OnMenuItemClickListener {
     public static final String TAG = "CaptureListFragment";
     private View mRootView;
     private CaptureListAdapter mAdapter;
@@ -37,6 +39,7 @@ public class CaptureListFragment extends Fragment implements HarCallback {
             mRootView = inflater.inflate(R.layout.fragment_capture_list, container, false);
             Toolbar toolBar = mRootView.findViewById(R.id.tool_bar);
             toolBar.inflateMenu(R.menu.capture_list_bar);
+            toolBar.setOnMenuItemClickListener(this);
             RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_view);
             recyclerView.setLayoutManager(new LinearLayoutManager(null,LinearLayoutManager.VERTICAL,false));
             mHandler  = new RefreshHandler(this);
@@ -46,6 +49,7 @@ public class CaptureListFragment extends Fragment implements HarCallback {
             }
             recyclerView.setAdapter(mAdapter);
             EntryTabDelegate entryTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
+            entryTabDelegate.setRecAdapter(mAdapter);
             mAdapter.setEntryTabDelegate(entryTabDelegate);
         }
         return mRootView;
@@ -78,6 +82,19 @@ public class CaptureListFragment extends Fragment implements HarCallback {
             msg.arg1 = mCaptureBinder.getHarEntries().indexOf(harEntry);
             mHandler.sendMessage(msg);
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.exit:
+                FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    activity.finish();
+                }
+                return true;
+        }
+        return false;
     }
 
     private static class RefreshHandler extends Handler{

@@ -22,8 +22,6 @@ import com.hlq.capture.service.CaptureService;
 import com.hlq.capture.util.ProxyUtil;
 import com.hlq.capture.util.SPUtil;
 
-import net.lightbody.bmp.core.har.HarCallback;
-
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements CaptureBinder.OnProxyStartedListener {
@@ -163,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
 
     }
 
-
-
+    @Override
+    public void onBackPressed() {
+        if (!moveTaskToBack(false)) {
+            super.onBackPressed();
+        }
+    }
 }

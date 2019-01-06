@@ -7,7 +7,7 @@ import java.net.URLDecoder;
 import java.util.Date;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HarCookie {
+public class HarCookie implements INameValue{
     private volatile String name;
     private volatile String value;
     private volatile String path;
@@ -26,12 +26,12 @@ public class HarCookie {
     }
 
     public String getValue() {
-        return value;
+        return getDecodeValue();
     }
 
     public String getDecodeValue(){
         try {
-            return URLDecoder.decode(value);
+            return URLDecoder.decode(value,"utf-8");
         }catch (Exception e){
             return value;
         }

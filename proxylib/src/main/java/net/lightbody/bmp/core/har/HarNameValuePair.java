@@ -2,7 +2,7 @@ package net.lightbody.bmp.core.har;
 
 import java.net.URLDecoder;
 
-public final class HarNameValuePair {
+public final class HarNameValuePair implements INameValue {
     private final String name;
     private final String value;
 
@@ -16,12 +16,12 @@ public final class HarNameValuePair {
     }
 
     public String getValue() {
-        return value;
+        return getDecodeValue();
     }
 
     public String getDecodeValue(){
         try {
-            return URLDecoder.decode(value);
+            return URLDecoder.decode(value,"utf-8");
         }catch (Exception e){
             return value;
         }

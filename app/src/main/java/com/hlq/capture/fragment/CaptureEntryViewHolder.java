@@ -35,6 +35,9 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
         mEntryTabDelegate = entryTabDelegate;
         mBarView = (HarEntryViewBar) itemView;
         mBarView.setOnClickListener(this);
+    }
+
+    private void setDefaultBackground() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mBarView.setBackground(new RippleDrawable(ColorStateList.valueOf(Color.LTGRAY),new ColorDrawable(Color.WHITE),null));
         }
@@ -47,6 +50,11 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
 
     void setData(HarEntry harEntry,int position,SimpleDateFormat format){
         mHarEntry = harEntry;
+        if (mEntryTabDelegate != null && mEntryTabDelegate.mClickedPosition == getAdapterPosition()) {
+            onClick(mBarView);
+        } else {
+            setDefaultBackground();
+        }
 
         for (int i = 0; i < mBarView.getChildCount(); i++) {
             TextView textView = (TextView) mBarView.getChildAt(i);
@@ -80,9 +88,9 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
 
     @Override
     public void onClick(View v) {
-
         if (mEntryTabDelegate != null) {
-            mEntryTabDelegate.showHarEntry(mHarEntry);
+            mEntryTabDelegate.showHarEntry(mHarEntry,getAdapterPosition());
         }
+        mBarView.setBackgroundColor(Color.GREEN);
     }
 }

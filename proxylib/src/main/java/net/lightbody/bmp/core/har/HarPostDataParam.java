@@ -3,7 +3,7 @@ package net.lightbody.bmp.core.har;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HarPostDataParam {
+public class HarPostDataParam implements INameValue{
     private volatile String name;
     private volatile String value;
     private volatile String fileName;
