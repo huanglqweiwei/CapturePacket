@@ -121,7 +121,7 @@ class HeaderExpandAdapter extends BaseExpandableListAdapter {
 
     public void onBindViewHolder(INameValue nameValue ,TextView textView) {
         String name = nameValue.getName();
-        SpannableString spanStr = new SpannableString(name + ":" + nameValue.getValue());
+        SpannableString spanStr = new SpannableString(name + ": " + nameValue.getValue());
         spanStr.setSpan(new ForegroundColorSpan(0xffFF4081),0, name.length()+1 , Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         textView.setText(spanStr);
     }

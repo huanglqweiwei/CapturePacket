@@ -110,7 +110,7 @@ public class HarEntry {
     public void setRequest(HarRequest request) {
         this.request = request;
         if (mHarCallback != null) {
-            mHarCallback.onEntryChanged(this);
+            mHarCallback.onEntryChanged(this,HarCallback.ITEM_REQUEST);
         }
     }
 
@@ -121,7 +121,7 @@ public class HarEntry {
     public void setResponse(HarResponse response) {
         this.response = response;
         if (mHarCallback != null) {
-            mHarCallback.onEntryChanged(this);
+            mHarCallback.onEntryChanged(this, HarCallback.ITEM_RESPONSE);
         }
     }
 

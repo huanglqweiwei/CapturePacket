@@ -37,7 +37,7 @@ public class SpanViewHolder extends RecyclerView.ViewHolder {
 
     public void onBindViewHolder(INameValue nameValue) {
         String name = nameValue.getName();
-        SpannableString spanStr = new SpannableString(name + ":" + nameValue.getValue());
+        SpannableString spanStr = new SpannableString(name + ": " + nameValue.getValue());
         spanStr.setSpan(new ForegroundColorSpan(0xffFF4081),0, name.length()+1 , Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         mTextView.setText(spanStr);
     }

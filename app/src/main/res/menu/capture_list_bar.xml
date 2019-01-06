@@ -5,6 +5,7 @@
         android:id="@+id/filter"
         android:icon="@drawable/ic_filter_list_black_24dp"
         android:title="@string/filter"
+        app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/exit"

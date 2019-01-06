@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
+                    .addToBackStack(null)
                     .add(R.id.fl_content,new CaptureListFragment(),CaptureListFragment.TAG)
                     .commitAllowingStateLoss();
         }

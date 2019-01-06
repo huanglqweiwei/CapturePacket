@@ -10,12 +10,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hlq.capture.HLog;
 import com.hlq.capture.R;
 import com.hlq.capture.service.CaptureBinder;
 
@@ -26,11 +29,13 @@ import net.lightbody.bmp.core.har.HarEntry;
  * Created by hlq on 2018/12/22 0022.
  */
 
-public class CaptureListFragment extends Fragment implements HarCallback, Toolbar.OnMenuItemClickListener {
+public class CaptureListFragment extends Fragment implements HarCallback, Toolbar.OnMenuItemClickListener, SearchView.OnQueryTextListener {
     public static final String TAG = "CaptureListFragment";
     private View mRootView;
     private CaptureListAdapter mAdapter;
     private CaptureBinder mCaptureBinder;
+    private SearchView mSearchView;
+    private String mFilterString;
 
     @Nullable
     @Override
@@ -40,6 +45,11 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
             Toolbar toolBar = mRootView.findViewById(R.id.tool_bar);
             toolBar.inflateMenu(R.menu.capture_list_bar);
             toolBar.setOnMenuItemClickListener(this);
+            MenuItem item = toolBar.getMenu().findItem(R.id.filter);
+            mSearchView = (SearchView) item.getActionView();
+            mSearchView.setQueryHint("过滤Url");
+            mSearchView.setOnQueryTextListener(this);
+
             RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_view);
             recyclerView.setLayoutManager(new LinearLayoutManager(null,LinearLayoutManager.VERTICAL,false));
             mHandler  = new RefreshHandler(this);
@@ -66,21 +76,48 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     private RefreshHandler mHandler;
     @Override
     public void onAddEntry(HarEntry harEntry, int position) {
-        if (mHandler != null) {
-            Message msg = Message.obtain();
-            msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD;
-            msg.arg1 = position;
-            mHandler.sendMessage(msg);
+        if (mAdapter == null || mAdapter.isOrigin()) {
+            if (mHandler != null) {
+                Message msg = Message.obtain();
+                msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD;
+                msg.arg1 = position;
+                mHandler.sendMessage(msg);
+            }
         }
     }
 
     @Override
-    public void onEntryChanged(HarEntry harEntry) {
-        if (mHandler != null) {
-            Message msg = Message.obtain();
-            msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
-            msg.arg1 = mCaptureBinder.getHarEntries().indexOf(harEntry);
-            mHandler.sendMessage(msg);
+    public void onEntryChanged(HarEntry harEntry,int changeItem) {
+
+        if (mAdapter == null || mAdapter.isOrigin()) {
+            if (mHandler != null) {
+                Message msg = Message.obtain();
+                msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
+                msg.arg1 = mCaptureBinder.getHarEntries().indexOf(harEntry);
+                mHandler.sendMessage(msg);
+            }
+        } else if (!TextUtils.isEmpty(mFilterString)){
+            if (changeItem == HarCallback.ITEM_REQUEST) {
+                String url = harEntry.getRequest().getUrl();
+                if (!TextUtils.isEmpty(url)) {
+                    url = url.toLowerCase();
+                    if (url.contains(mFilterString)) {
+                        if (mHandler != null) {
+                            Message msg = Message.obtain();
+                            msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD_2;
+                            msg.obj = harEntry;
+                            mHandler.sendMessage(msg);
+                        }
+                    }
+                }
+            } else {
+                if (mHandler != null) {
+                    Message msg = Message.obtain();
+                    msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED_2;
+                    msg.obj = harEntry;
+                    mHandler.sendMessage(msg);
+                }
+            }
         }
     }
 
@@ -97,10 +134,26 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
         return false;
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        mAdapter.getFilter().filter(query);
+        mFilterString = query;
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mAdapter.getFilter().filter(newText);
+        mFilterString = newText;
+        return false;
+    }
+
     public static class RefreshHandler extends Handler{
         public static final int WHAT_HAR_ENTRY_ADD = 0;
         private static final int WHAT_DATA_SET_CHANGE = 1;
         public static final int WHAT_HAR_ENTRY_CHANGED = 2;
+        public static final int WHAT_HAR_ENTRY_ADD_2 = 3;
+        public static final int WHAT_HAR_ENTRY_CHANGED_2 = 4;
         private CaptureListFragment mFragment;
 
         RefreshHandler(CaptureListFragment fragment){
@@ -111,7 +164,9 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
             switch (msg.what) {
                 case WHAT_HAR_ENTRY_ADD:
                     if (mFragment.mAdapter != null) {
-                        mFragment.mAdapter.notifyItemInserted(msg.arg1);
+                        if (mFragment.mAdapter.getItemCount() > msg.arg1) {
+                            mFragment.mAdapter.notifyItemInserted(msg.arg1);
+                        }
                     }
                     break;
                 case WHAT_DATA_SET_CHANGE:
@@ -120,8 +175,20 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                     }
                     break;
                 case WHAT_HAR_ENTRY_CHANGED:
-                    if (mFragment.mAdapter != null && msg.arg1 >=0 && msg.arg1 < mFragment.mAdapter.getItemCount()) {
+                    if (mFragment.mAdapter != null && msg.arg1 > -1 && msg.arg1 < mFragment.mAdapter.getItemCount()) {
                         mFragment.mAdapter.notifyItemChanged(msg.arg1);
+                    }
+                    break;
+                case WHAT_HAR_ENTRY_ADD_2:
+                    if (mFragment.mAdapter != null) {
+                        HarEntry entry = (HarEntry) msg.obj;
+                        mFragment.mAdapter.addHarEntry(entry);
+                    }
+                    break;
+                case WHAT_HAR_ENTRY_CHANGED_2:
+                    if (mFragment.mAdapter != null) {
+                        HarEntry entry = (HarEntry) msg.obj;
+                        mFragment.mAdapter.onHarEntryChanged(entry);
                     }
                     break;
             }

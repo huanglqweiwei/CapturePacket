@@ -5,6 +5,8 @@ package net.lightbody.bmp.core.har;
  */
 
 public interface HarCallback {
+    int ITEM_REQUEST = 0;
+    int ITEM_RESPONSE = 1;
     void onAddEntry(HarEntry harEntry, int position);
-    void onEntryChanged(HarEntry harEntry);
+    void onEntryChanged(HarEntry harEntry,int changeItem);
 }
