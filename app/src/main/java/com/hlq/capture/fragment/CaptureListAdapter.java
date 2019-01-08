@@ -96,6 +96,15 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
         }
     }
 
+    public void clearEntries() {
+        if (mOrgHarEntries != null) {
+            mOrgHarEntries.clear();
+        }
+        if (mHarEntries != null) {
+            mHarEntries.clear();
+        }
+    }
+
     private class CaptureFilter extends Filter {
 
         @Override

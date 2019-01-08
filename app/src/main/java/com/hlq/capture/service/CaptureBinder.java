@@ -77,6 +77,13 @@ public class CaptureBinder extends Binder {
         return mProxyServer == null ? null : mProxyServer.getHar().getLog().getEntries();
     }
 
+    public void clearHarEntries() {
+        Har har = mProxyServer.newHar();
+        if (har != null) {
+            har.getLog().clearAllEntries();
+        }
+    }
+
     public interface OnProxyStartedListener {
         void onProxyStarted();
     }

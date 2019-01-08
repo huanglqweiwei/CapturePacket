@@ -9,4 +9,6 @@ public interface HarCallback {
     int ITEM_RESPONSE = 1;
     void onAddEntry(HarEntry harEntry, int position);
     void onEntryChanged(HarEntry harEntry,int changeItem);
+
+    void onClearEntries();
 }

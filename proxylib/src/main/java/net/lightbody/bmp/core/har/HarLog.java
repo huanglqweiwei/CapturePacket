@@ -1,7 +1,6 @@
 package net.lightbody.bmp.core.har;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hlq.capture.HLog;
 
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.util.BrowserMobProxyUtil;
@@ -20,7 +19,7 @@ public class HarLog {
     private List<HarPage> pages = new CopyOnWriteArrayList<HarPage>();
     private List<HarEntry> entries = new CopyOnWriteArrayList<HarEntry>();
     private volatile String comment = "";
-    private BrowserMobProxyServer server;
+    public BrowserMobProxyServer server;
 
     public HarLog() {
     }

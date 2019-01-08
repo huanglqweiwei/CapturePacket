@@ -13,10 +13,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.hlq.capture.R;
 import com.hlq.capture.service.CaptureBinder;
@@ -97,6 +100,15 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     }
 
     @Override
+    public void onClearEntries() {
+        if (mCaptureBinder != null && mAdapter != null) {
+            mAdapter.clearEntries();
+            mAdapter.setHarEntries(mCaptureBinder.getHarEntries());
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.exit:
@@ -106,17 +118,25 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 }
                 return true;
             case R.id.help:
+
                 break;
-            case R.id.download_address:
+            case R.id.clear:
+                if (mCaptureBinder != null) {
+                    mCaptureBinder.clearHarEntries();
+                    onClearEntries();
+                }
                 break;
             case R.id.auto_scroll:
                 mAutoScroll = !item.isChecked();
                 item.setChecked(mAutoScroll);
                 break;
             case R.id.float_window:
+                Toast toast = Toast.makeText(getActivity(), "开发中，敬请期待！", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
                 break;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -145,6 +165,21 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     public boolean onQueryTextChange(String newText) {
         mAdapter.getFilter().filter(newText);
         return false;
+    }
+
+    private int mDivid = 0;
+
+    public void onDispatchTouchEvent(MotionEvent ev) {
+        if (mSearchView != null && mSearchView.hasFocus()) {
+            if (mDivid == 0) {
+                int[] leftTop = new int[2];
+                mSearchView.getLocationInWindow(leftTop);
+                mDivid = mSearchView.getHeight() + leftTop[1];
+            }
+            if (ev.getY() > mDivid) {
+                mSearchView.clearFocus();
+            }
+        }
     }
 
     public static class RefreshHandler extends Handler{

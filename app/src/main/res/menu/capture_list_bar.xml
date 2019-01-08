@@ -11,8 +11,8 @@
         android:title="@string/help"
         app:showAsAction="never" />
     <item
-        android:id="@+id/download_address"
-        android:title="@string/download_address"
+        android:id="@+id/clear"
+        android:title="@string/clear"
         app:showAsAction="never" />
     <item
         android:id="@+id/auto_scroll"

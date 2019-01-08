@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 
 import com.hlq.capture.fragment.CaptureListFragment;
 import com.hlq.capture.service.CaptureBinder;
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .addToBackStack(null)
                     .add(R.id.fl_content,new CaptureListFragment(),CaptureListFragment.TAG)
                     .commitAllowingStateLoss();
         }
@@ -167,5 +167,17 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         if (!moveTaskToBack(false)) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(CaptureListFragment.TAG);
+            if (fragment != null) {
+                CaptureListFragment listFragment = (CaptureListFragment) fragment;
+                listFragment.onDispatchTouchEvent(ev);
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 }
