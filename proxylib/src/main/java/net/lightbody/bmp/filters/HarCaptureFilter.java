@@ -241,7 +241,6 @@ public class HarCaptureFilter extends HttpsAwareFiltersAdapter {
             }
 
             harEntry.getRequest().setBodySize(requestBodySize.get());
-            HLog.w("HarRequest :" + harEntry.getRequest());
 
         }
 

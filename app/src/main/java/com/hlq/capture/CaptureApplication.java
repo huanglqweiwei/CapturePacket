@@ -1,10 +1,13 @@
 package com.hlq.capture;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
-public class CaptureApplication extends Application {
+import com.tencent.bugly.crashreport.CrashReport;
+
+public class CaptureApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        CrashReport.initCrashReport(getApplicationContext(), "bf984fa8b1", false);
     }
 }
