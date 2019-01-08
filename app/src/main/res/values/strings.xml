@@ -2,4 +2,8 @@
     <string name="app_name">CapturePacket</string>
     <string name="filter">过滤</string>
     <string name="exit">退出</string>
+    <string name="help">帮助</string>
+    <string name="download_address">下载地址</string>
+    <string name="auto_scroll">自动滚动</string>
+    <string name="float_window">开启悬浮窗</string>
 </resources>

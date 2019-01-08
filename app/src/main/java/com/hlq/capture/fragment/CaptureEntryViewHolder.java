@@ -45,20 +45,17 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
 
     public void setItemContent(int type, String content) {
         TextView textView = (TextView) mBarView.getChildAt(type);
-        textView.setText(content);
+        if (textView != null) {
+            textView.setText(content);
+        }
     }
 
     void setData(HarEntry harEntry,int position,SimpleDateFormat format){
         mHarEntry = harEntry;
-        if (mEntryTabDelegate != null && mEntryTabDelegate.mClickedPosition == getAdapterPosition()) {
+        if (mEntryTabDelegate != null && mEntryTabDelegate.mHarEntry == harEntry ) {
             onClick(mBarView);
         } else {
             setDefaultBackground();
-        }
-
-        for (int i = 0; i < mBarView.getChildCount(); i++) {
-            TextView textView = (TextView) mBarView.getChildAt(i);
-            textView.setText("");
         }
 
         HarRequest request = harEntry.getRequest();
@@ -66,8 +63,9 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
         setItemContent(HarEntryViewBar.TYPE_ID,String.valueOf(position));
         Date startedDateTime = harEntry.getStartedDateTime();
         if (startedDateTime != null) {
-
             setItemContent(HarEntryViewBar.TYPE_STARTED_TIME, format.format(startedDateTime));
+        } else {
+            setItemContent(HarEntryViewBar.TYPE_STARTED_TIME, "");
         }
 
         if (request != null) {
@@ -77,19 +75,30 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
                 Uri uri = Uri.parse(url);
                 setItemContent(HarEntryViewBar.TYPE_HOST,uri.getHost());
                 setItemContent(HarEntryViewBar.TYPE_PATH,uri.getPath());
+            }else {
+                setItemContent(HarEntryViewBar.TYPE_HOST,"");
+                setItemContent(HarEntryViewBar.TYPE_PATH,"");
             }
+        } else {
+            setItemContent(HarEntryViewBar.TYPE_METHOD,"");
+            setItemContent(HarEntryViewBar.TYPE_HOST,"");
+            setItemContent(HarEntryViewBar.TYPE_PATH,"");
         }
         if (response != null) {
             setItemContent(HarEntryViewBar.TYPE_STATUS,String.valueOf(response.getStatus()));
             setItemContent(HarEntryViewBar.TYPE_TOTAL_SIZE,response.getBodySize()+ " bytes");
             setItemContent(HarEntryViewBar.TYPE_TOTAL_TIME,harEntry.getTime() + "ms");
+        } else {
+            setItemContent(HarEntryViewBar.TYPE_STATUS,"");
+            setItemContent(HarEntryViewBar.TYPE_TOTAL_SIZE,"");
+            setItemContent(HarEntryViewBar.TYPE_TOTAL_TIME,"");
         }
     }
 
     @Override
     public void onClick(View v) {
         if (mEntryTabDelegate != null) {
-            mEntryTabDelegate.showHarEntry(mHarEntry,getAdapterPosition());
+            mEntryTabDelegate.showHarEntry(mHarEntry);
         }
         mBarView.setBackgroundColor(Color.GREEN);
     }

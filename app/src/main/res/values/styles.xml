@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:textColorSecondary">@color/white</item> <!--新增一个item，用于控制menu-->
+
     </style>
     <style name="ToolbarPopupTheme" parent="@style/ThemeOverlay.AppCompat.Light">
         <!--<item name="android:colorBackground">#000000</item>--> <!--这里可以改变菜单的背景色-->

@@ -31,12 +31,11 @@ import java.util.List;
 public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
     private final TabLayout mTabLayout;
     private final ViewGroup mContentView;
-    private HarEntry mHarEntry;
+    public HarEntry mHarEntry;
     private SparseArray<TabHolder> mSparseArray;
     private static final int TYPE_NAME_VALUE = 0;
     private static final int TYPE_HEADS = 1;
     private static final int TYPE_CONTENT = 2;
-    public int mClickedPosition = -1;
     private CaptureListFragment.RefreshHandler mRefreshHandler;
 
     EntryTabDelegate(TabLayout tabLayout, ViewGroup contentView) {
@@ -193,16 +192,14 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
 
     }
 
-    void showHarEntry(HarEntry harEntry, int clickedPosition) {
-        if (mClickedPosition != -1 && mRefreshHandler != null) {
-            Message msg = Message.obtain();
-            msg.what = CaptureListFragment.RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
-            msg.arg1 = mClickedPosition;
-            mRefreshHandler.sendMessage(msg);
-        }
-
-        mClickedPosition = clickedPosition;
+    void showHarEntry(HarEntry harEntry) {
         if (mHarEntry != harEntry) {
+            if (mHarEntry != null && mRefreshHandler != null) {
+                Message msg = Message.obtain();
+                msg.what = CaptureListFragment.RefreshHandler.WHAT_HAR_ENTRY_CHANGED_2;
+                msg.obj = mHarEntry;
+                mRefreshHandler.sendMessage(msg);
+            }
             mHarEntry = harEntry;
             initTab();
             int selectedTabPosition = mTabLayout.getSelectedTabPosition();

@@ -3,10 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/filter"
-        android:icon="@drawable/ic_filter_list_black_24dp"
         android:title="@string/filter"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/help"
+        android:title="@string/help"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/download_address"
+        android:title="@string/download_address"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/auto_scroll"
+        android:title="@string/auto_scroll"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/float_window"
+        android:title="@string/float_window"
+        app:showAsAction="never" />
     <item
         android:id="@+id/exit"
         android:title="@string/exit"

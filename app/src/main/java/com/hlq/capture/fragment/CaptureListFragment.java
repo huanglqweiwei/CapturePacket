@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hlq.capture.HLog;
 import com.hlq.capture.R;
 import com.hlq.capture.service.CaptureBinder;
 
@@ -35,7 +34,9 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     private CaptureListAdapter mAdapter;
     private CaptureBinder mCaptureBinder;
     private SearchView mSearchView;
-    private String mFilterString;
+    private boolean mAutoScroll = true;
+    private EntryTabDelegate mTabDelegate;
+    private RecyclerView mRecyclerView;
 
     @Nullable
     @Override
@@ -50,17 +51,17 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
             mSearchView.setQueryHint("过滤Url");
             mSearchView.setOnQueryTextListener(this);
 
-            RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_view);
-            recyclerView.setLayoutManager(new LinearLayoutManager(null,LinearLayoutManager.VERTICAL,false));
+            mRecyclerView = mRootView.findViewById(R.id.recycler_view);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(null,LinearLayoutManager.VERTICAL,false));
             mHandler  = new RefreshHandler(this);
             mAdapter = new CaptureListAdapter();
             if (mCaptureBinder != null) {
                 mAdapter.setHarEntries(mCaptureBinder.getHarEntries());
             }
-            recyclerView.setAdapter(mAdapter);
-            EntryTabDelegate entryTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
-            entryTabDelegate.setRefreshHandler(mHandler);
-            mAdapter.setEntryTabDelegate(entryTabDelegate);
+            mRecyclerView.setAdapter(mAdapter);
+            mTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
+            mTabDelegate.setRefreshHandler(mHandler);
+            mAdapter.setEntryTabDelegate(mTabDelegate);
         }
         return mRootView;
     }
@@ -76,48 +77,22 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     private RefreshHandler mHandler;
     @Override
     public void onAddEntry(HarEntry harEntry, int position) {
-        if (mAdapter == null || mAdapter.isOrigin()) {
-            if (mHandler != null) {
-                Message msg = Message.obtain();
-                msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD;
-                msg.arg1 = position;
-                mHandler.sendMessage(msg);
-            }
+        if (mHandler != null) {
+            Message msg = Message.obtain();
+            msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD;
+            msg.obj = harEntry;
+            mHandler.sendMessage(msg);
         }
     }
 
     @Override
     public void onEntryChanged(HarEntry harEntry,int changeItem) {
-
-        if (mAdapter == null || mAdapter.isOrigin()) {
-            if (mHandler != null) {
-                Message msg = Message.obtain();
-                msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
-                msg.arg1 = mCaptureBinder.getHarEntries().indexOf(harEntry);
-                mHandler.sendMessage(msg);
-            }
-        } else if (!TextUtils.isEmpty(mFilterString)){
-            if (changeItem == HarCallback.ITEM_REQUEST) {
-                String url = harEntry.getRequest().getUrl();
-                if (!TextUtils.isEmpty(url)) {
-                    url = url.toLowerCase();
-                    if (url.contains(mFilterString)) {
-                        if (mHandler != null) {
-                            Message msg = Message.obtain();
-                            msg.what = RefreshHandler.WHAT_HAR_ENTRY_ADD_2;
-                            msg.obj = harEntry;
-                            mHandler.sendMessage(msg);
-                        }
-                    }
-                }
-            } else {
-                if (mHandler != null) {
-                    Message msg = Message.obtain();
-                    msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED_2;
-                    msg.obj = harEntry;
-                    mHandler.sendMessage(msg);
-                }
-            }
+        if (mHandler != null) {
+            Message msg = Message.obtain();
+            msg.what = RefreshHandler.WHAT_HAR_ENTRY_CHANGED;
+            msg.obj = harEntry;
+            msg.arg1 = changeItem;
+            mHandler.sendMessage(msg);
         }
     }
 
@@ -130,21 +105,45 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                     activity.finish();
                 }
                 return true;
+            case R.id.help:
+                break;
+            case R.id.download_address:
+                break;
+            case R.id.auto_scroll:
+                mAutoScroll = !item.isChecked();
+                item.setChecked(mAutoScroll);
+                break;
+            case R.id.float_window:
+                break;
         }
         return false;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mSearchView != null && mSearchView.hasFocus()) {
+            mSearchView.clearFocus();
+        }
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String query) {
         mAdapter.getFilter().filter(query);
-        mFilterString = query;
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         mAdapter.getFilter().filter(newText);
-        mFilterString = newText;
         return false;
     }
 
@@ -152,8 +151,7 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
         public static final int WHAT_HAR_ENTRY_ADD = 0;
         private static final int WHAT_DATA_SET_CHANGE = 1;
         public static final int WHAT_HAR_ENTRY_CHANGED = 2;
-        public static final int WHAT_HAR_ENTRY_ADD_2 = 3;
-        public static final int WHAT_HAR_ENTRY_CHANGED_2 = 4;
+        public static final int WHAT_HAR_ENTRY_CHANGED_2 = 3;
         private CaptureListFragment mFragment;
 
         RefreshHandler(CaptureListFragment fragment){
@@ -164,8 +162,13 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
             switch (msg.what) {
                 case WHAT_HAR_ENTRY_ADD:
                     if (mFragment.mAdapter != null) {
-                        if (mFragment.mAdapter.getItemCount() > msg.arg1) {
-                            mFragment.mAdapter.notifyItemInserted(msg.arg1);
+                        mFragment.mAdapter.addToOriginList((HarEntry)msg.obj);
+                        if (mFragment.mAdapter.isOrigin()) {
+                            int position = mFragment.mAdapter.getItemCount() - 1;
+                            if (position > -1) {
+                                mFragment.mAdapter.notifyItemInserted(position);
+                                mFragment.autoScroll(position);
+                            }
                         }
                     }
                     break;
@@ -175,15 +178,33 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                     }
                     break;
                 case WHAT_HAR_ENTRY_CHANGED:
-                    if (mFragment.mAdapter != null && msg.arg1 > -1 && msg.arg1 < mFragment.mAdapter.getItemCount()) {
-                        mFragment.mAdapter.notifyItemChanged(msg.arg1);
-                    }
-                    break;
-                case WHAT_HAR_ENTRY_ADD_2:
                     if (mFragment.mAdapter != null) {
-                        HarEntry entry = (HarEntry) msg.obj;
-                        mFragment.mAdapter.addHarEntry(entry);
+                        HarEntry harEntry = (HarEntry) msg.obj;
+                        if (mFragment.mAdapter.isOrigin()) {
+                            mFragment.mAdapter.onHarEntryChanged(harEntry);
+                        }else{
+                            SearchView searchView = mFragment.mSearchView;
+                            if (searchView != null) {
+                                String queryString = searchView.getQuery().toString().trim();
+                                if (!TextUtils.isEmpty(queryString)){
+                                    int changeItem = msg.arg1;
+                                    if (changeItem == HarCallback.ITEM_REQUEST) {
+                                        String url = harEntry.getRequest().getUrl();
+                                        if (!TextUtils.isEmpty(url)) {
+                                            url = url.toLowerCase();
+                                            if (url.contains(queryString)) {
+                                                int position = mFragment.mAdapter.addHarEntry(harEntry);
+                                                mFragment.autoScroll(position);
+                                            }
+                                        }
+                                    } else {
+                                        mFragment.mAdapter.onHarEntryChanged(harEntry);
+                                    }
+                                }
+                            }
+                        }
                     }
+
                     break;
                 case WHAT_HAR_ENTRY_CHANGED_2:
                     if (mFragment.mAdapter != null) {
@@ -191,6 +212,14 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                         mFragment.mAdapter.onHarEntryChanged(entry);
                     }
                     break;
+            }
+        }
+    }
+
+    private void autoScroll(int position) {
+        if (mAutoScroll && mRecyclerView != null) {
+            if (position > -1) {
+                mRecyclerView.smoothScrollToPosition(position);
             }
         }
     }

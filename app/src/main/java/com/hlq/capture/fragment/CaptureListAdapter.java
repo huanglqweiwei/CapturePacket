@@ -27,6 +27,7 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
     private final Object mLock  = new Object();
 
     public void setHarEntries(List<HarEntry> harEntries){
+        harEntries = new ArrayList<>(harEntries);
         mOrgHarEntries = harEntries;
         mHarEntries = harEntries;
     }
@@ -70,11 +71,14 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
 
     }
 
-    public void addHarEntry(HarEntry entry) {
+    public int addHarEntry(HarEntry entry) {
         if (mHarEntries != null) {
             mHarEntries.add(entry);
-            notifyItemInserted(mHarEntries.size() -1);
+            int position = mHarEntries.size() - 1;
+            notifyItemInserted(position);
+            return position;
         }
+        return -1;
     }
 
     public void onHarEntryChanged(HarEntry entry) {
@@ -83,6 +87,12 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
             if (index != -1) {
                 notifyItemChanged(index);
             }
+        }
+    }
+
+    public void addToOriginList(HarEntry harEntry) {
+        if (mOrgHarEntries != null) {
+            mOrgHarEntries.add(harEntry);
         }
     }
 
