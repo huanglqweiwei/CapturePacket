@@ -115,6 +115,7 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 FragmentActivity activity = getActivity();
                 if (activity != null) {
                     activity.finish();
+                    System.exit(0);
                 }
                 return true;
             case R.id.help:

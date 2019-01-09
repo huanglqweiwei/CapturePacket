@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
             }
         }
         boolean result = ProxyUtil.setProxy(this, CaptureService.PROXY_PORT);
-        final String text = result ? "Set proxyHost success !!!" : "Set proxyHost failure ~~~";
+        final String text = result ? "Set proxy host success !!!" : "Set proxy host failure ~~~";
 
         runOnUiThread(new Runnable() {
             @Override
