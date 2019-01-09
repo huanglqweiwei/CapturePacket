@@ -59,6 +59,9 @@ public class EntryTabDelegate implements TabLayout.OnTabSelectedListener {
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         mContentView.removeAllViews();
+        if (mHarEntry == null) {
+            return;
+        }
         View view = null;
         int position = tab.getPosition();
         int viewType = getTabViewType(position);

@@ -103,6 +103,9 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
         if (mHarEntries != null) {
             mHarEntries.clear();
         }
+        if (mEntryTabDelegate != null) {
+            mEntryTabDelegate.showHarEntry(null);
+        }
     }
 
     private class CaptureFilter extends Filter {

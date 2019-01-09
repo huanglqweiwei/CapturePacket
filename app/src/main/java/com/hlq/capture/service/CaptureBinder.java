@@ -17,11 +17,14 @@ public class CaptureBinder extends Binder {
 
 
     private BrowserMobProxyServer mProxyServer;
-    private boolean mProxyStarted;
+    private byte mProxyState = CaptureService.STATE_INIT;
     private OnProxyStartedListener mStartedListener;
 
+    public byte getProxyState(){
+        return mProxyState;
+    }
     public boolean isProxyStarted(){
-        return mProxyStarted;
+        return mProxyState == CaptureService.STATE_SUCCESS;
     }
     public void setStartedListener(OnProxyStartedListener listener){
         mStartedListener = listener;
@@ -31,19 +34,16 @@ public class CaptureBinder extends Binder {
         mProxyServer = proxyServer;
     }
 
-    public void setProxyStarted(boolean proxyStarted) {
-        mProxyStarted = proxyStarted;
-        if (proxyStarted) {
-            if (mStartedListener != null) {
-                mStartedListener.onProxyStarted();
-            }
+    public void setProxyState(byte state) {
+        mProxyState = state;
+        if (mStartedListener != null) {
+            mStartedListener.onProxyStarted();
         }
     }
 
     @Nullable
     public byte[] getCerBytes() {
-        if (mProxyStarted) {
-
+        if (mProxyServer != null) {
             FileInputStream stream = null;
             try {
                 stream = new FileInputStream(mProxyServer.getCerPath());
@@ -70,7 +70,9 @@ public class CaptureBinder extends Binder {
     }
 
     public void setHarCallback(HarCallback callback){
-        mProxyServer.mHarCallback = callback;
+        if (mProxyServer != null) {
+            mProxyServer.mHarCallback = callback;
+        }
     }
 
     public List<HarEntry> getHarEntries() {
@@ -78,9 +80,11 @@ public class CaptureBinder extends Binder {
     }
 
     public void clearHarEntries() {
-        Har har = mProxyServer.newHar();
-        if (har != null) {
-            har.getLog().clearAllEntries();
+        if (mProxyServer != null) {
+            Har har = mProxyServer.newHar();
+            if (har != null) {
+                har.getLog().clearAllEntries();
+            }
         }
     }
 

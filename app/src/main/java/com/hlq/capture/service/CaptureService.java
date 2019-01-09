@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import com.hlq.capture.HLog;
 import com.hlq.capture.MainActivity;
 import com.hlq.capture.R;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.core.har.Har;
@@ -37,8 +38,10 @@ public class CaptureService extends Service implements Runnable {
         mKeyStoreDir = intent.getStringExtra(KEY_STORE_DIR);
 
         mCaptureBinder = new CaptureBinder();
-        mCaptureBinder.setProxyServer(mProxyServer);
-        mCaptureBinder.setProxyStarted(mProxyStarted);
+        if (mProxyState != STATE_INIT) {
+            mCaptureBinder.setProxyServer(mProxyServer);
+            mCaptureBinder.setProxyState(mProxyState);
+        }
         return mCaptureBinder;
     }
 
@@ -112,26 +115,35 @@ public class CaptureService extends Service implements Runnable {
         super.onTrimMemory(level);
     }
 
-    private boolean mProxyStarted = false;
+    public static final byte STATE_INIT = -1;
+    public static final byte STATE_SUCCESS = 0;
+    public static final byte STATE_FAIL = 1;
+    private byte mProxyState = STATE_INIT;
     public static final int PROXY_PORT = 8888;
 
     @Override
     public void run() {
-        mProxyServer = new BrowserMobProxyServer(mKeyStoreDir);
-        mProxyServer.setTrustAllServers(true);
-        mProxyServer.start(PROXY_PORT);
+        try {
+            mProxyServer = new BrowserMobProxyServer(mKeyStoreDir);
+            mProxyServer.setTrustAllServers(true);
+            mProxyServer.start(PROXY_PORT);
 
-        mProxyServer.enableHarCaptureTypes(CaptureType.REQUEST_HEADERS, CaptureType.REQUEST_COOKIES,
-                CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_HEADERS, CaptureType.REQUEST_COOKIES,
-                CaptureType.RESPONSE_CONTENT);
+            mProxyServer.enableHarCaptureTypes(CaptureType.REQUEST_HEADERS, CaptureType.REQUEST_COOKIES,
+                    CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_HEADERS, CaptureType.REQUEST_COOKIES,
+                    CaptureType.RESPONSE_CONTENT);
 
-        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                .format(new Date(System.currentTimeMillis()));
-        mProxyServer.newHar(time);
-        mProxyStarted = true;
+            String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                    .format(new Date(System.currentTimeMillis()));
+            mProxyServer.newHar(time);
+            mProxyState = STATE_SUCCESS;
+
+        }catch (Throwable e){
+            CrashReport.postCatchedException(e);
+            mProxyState = STATE_FAIL;
+        }
         if (mCaptureBinder != null) {
             mCaptureBinder.setProxyServer(mProxyServer);
-            mCaptureBinder.setProxyStarted(true);
+            mCaptureBinder.setProxyState(mProxyState);
         }
 
     }

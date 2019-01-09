@@ -5,10 +5,11 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.os.Looper;
+import android.provider.Settings;
 import android.security.KeyChain;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.hlq.capture.fragment.CaptureListFragment;
 import com.hlq.capture.service.CaptureBinder;
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mBinder = (CaptureBinder) service;
-                if (mBinder.isProxyStarted()) {
+                if (mBinder.getProxyState() != CaptureService.STATE_INIT) {
                     onProxyStarted();
                 } else {
                     mBinder.setStartedListener(MainActivity.this);
@@ -94,6 +96,15 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
 
     @Override
     public void onProxyStarted() {
+        if (!mBinder.isProxyStarted()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Snackbar.make(getWindow().getDecorView(),"端口被占用或其他异常，启动失败！",Snackbar.LENGTH_SHORT).show();
+                }
+            });
+            return;
+        }
         if (!SPUtil.getBoolean(this,SPUtil.KEY_IS_INSTALL_CER,false)) {
             byte[] cerBytes = mBinder.getCerBytes();
             if (cerBytes != null) {
@@ -102,16 +113,14 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         }
         boolean result = ProxyUtil.setProxy(this, CaptureService.PROXY_PORT);
         final String text = result ? "Set proxyHost success !!!" : "Set proxyHost failure ~~~";
-        if (Looper.getMainLooper() == Looper.myLooper()) {
-            Snackbar.make(getWindow().getDecorView(),text,Snackbar.LENGTH_SHORT).show();
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Snackbar.make(getWindow().getDecorView(),text,Snackbar.LENGTH_SHORT).show();
-                }
-            });
-        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(getWindow().getDecorView(),text,Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
         if (result) {
             Fragment fragment = getSupportFragmentManager().findFragmentByTag(CaptureListFragment.TAG);
             if (fragment instanceof CaptureListFragment) {
@@ -129,9 +138,18 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         bindCaptureService();
                     } else {
-                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,permissions[i])) {
-
-                        }
+                        Snackbar snackbar = Snackbar.make(getWindow().getDecorView(), "需要允许读写SD卡的权限！", Snackbar.LENGTH_LONG);
+                        snackbar.setAction("去设置", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setData(Uri.parse("package:"+getPackageName()));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                        snackbar.show();
                     }
                 }
             }
@@ -164,8 +182,12 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
 
     @Override
     public void onBackPressed() {
-        if (!moveTaskToBack(false)) {
+        if (mBinder == null || !mBinder.isProxyStarted()) {
             super.onBackPressed();
+        } else {
+            if (!moveTaskToBack(false)) {
+                super.onBackPressed();
+            }
         }
     }
 
