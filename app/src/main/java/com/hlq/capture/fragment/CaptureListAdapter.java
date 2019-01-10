@@ -31,6 +31,10 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
         mOrgHarEntries = harEntries;
         mHarEntries = harEntries;
     }
+
+    void initHarEntries(){
+        mHarEntries = new ArrayList<>();
+    }
     @NonNull
     @Override
     public CaptureEntryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -168,6 +172,9 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
             if (results != null) {
                 mHarEntries = (List<HarEntry>) results.values;
                 notifyDataSetChanged();
+                if (mHarEntries == null || mHarEntries.isEmpty() || !mHarEntries.contains(mEntryTabDelegate.mHarEntry)) {
+                    mEntryTabDelegate.showHarEntry(null);
+                }
             }
         }
     }

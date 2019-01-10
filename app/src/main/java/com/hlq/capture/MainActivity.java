@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.hlq.capture.fragment.CaptureListFragment;
+import com.hlq.capture.fragment.HelpFragment;
 import com.hlq.capture.service.CaptureBinder;
 import com.hlq.capture.service.CaptureService;
 import com.hlq.capture.util.ProxyUtil;
@@ -130,6 +131,12 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        System.exit(0);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_STORAGE) {
@@ -138,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         bindCaptureService();
                     } else {
-                        Snackbar snackbar = Snackbar.make(getWindow().getDecorView(), "需要允许读写SD卡的权限！", Snackbar.LENGTH_LONG);
+                        Snackbar snackbar = Snackbar.make(getWindow().getDecorView(), "需要允许读写SD卡的权限！", Snackbar.LENGTH_INDEFINITE);
                         snackbar.setAction("去设置", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -182,6 +189,10 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
 
     @Override
     public void onBackPressed() {
+        if (getSupportFragmentManager().findFragmentByTag(HelpFragment.TAG) != null
+                && getSupportFragmentManager().popBackStackImmediate()){
+            return;
+        }
         if (mBinder == null || !mBinder.isProxyStarted()) {
             super.onBackPressed();
         } else {

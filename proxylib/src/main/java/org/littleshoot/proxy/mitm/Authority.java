@@ -39,7 +39,7 @@ public class Authority {
         if (parentDir != null) {
             keyStoreDir = new File(parentDir);
         } else {
-            keyStoreDir = new File(Environment.getExternalStorageDirectory() + "/ehar/");
+            keyStoreDir = new File(Environment.getExternalStorageDirectory() , "capture");
         }
         alias = CER_ALIAS; // proxy id
         password = "123456".toCharArray();

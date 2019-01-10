@@ -7,4 +7,21 @@
     <string name="auto_scroll">自动滚动</string>
     <string name="float_window">开启悬浮窗</string>
     <string name="clear">清空</string>
+    <string name="help_content">
+        1，设置网络代理域名：127.0.0.1:8888\n
+        \t\t路径：设置->WLAN->...\n
+        \n
+        2，安装根证书\n
+        \t\t应用启动时会自动跳转证书安装页面\n
+        \n
+        3，被抓包的应用需要信任所有证书\n
+        \n
+        4，部分标签名解释：\n
+        \t\tQuery：url中拼接的参数\n
+        \t\tParams：post请求中所携带的参数\n
+        \t\tContent：response中返回内容\n
+        \n
+        5，应用下载地址：https://www.pgyer.com/IqRI
+        \n
+    </string>
 </resources>

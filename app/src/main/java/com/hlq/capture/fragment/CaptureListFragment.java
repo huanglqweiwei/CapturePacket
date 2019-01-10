@@ -38,7 +38,6 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
     private CaptureBinder mCaptureBinder;
     private SearchView mSearchView;
     private boolean mAutoScroll = true;
-    private EntryTabDelegate mTabDelegate;
     private RecyclerView mRecyclerView;
 
     @Nullable
@@ -62,9 +61,9 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 mAdapter.setHarEntries(mCaptureBinder.getHarEntries());
             }
             mRecyclerView.setAdapter(mAdapter);
-            mTabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
-            mTabDelegate.setRefreshHandler(mHandler);
-            mAdapter.setEntryTabDelegate(mTabDelegate);
+            EntryTabDelegate tabDelegate = new EntryTabDelegate((TabLayout) mRootView.findViewById(R.id.tab), (ViewGroup) mRootView.findViewById(R.id.fl_detail));
+            tabDelegate.setRefreshHandler(mHandler);
+            mAdapter.setEntryTabDelegate(tabDelegate);
         }
         return mRootView;
     }
@@ -104,6 +103,9 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
         if (mCaptureBinder != null && mAdapter != null) {
             mAdapter.clearEntries();
             mAdapter.setHarEntries(mCaptureBinder.getHarEntries());
+            if (mSearchView != null&& !TextUtils.isEmpty(mSearchView.getQuery().toString().trim())) {
+                mAdapter.initHarEntries();
+            }
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -115,11 +117,17 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 FragmentActivity activity = getActivity();
                 if (activity != null) {
                     activity.finish();
-                    System.exit(0);
                 }
                 return true;
             case R.id.help:
-
+                FragmentActivity fragmentActivity = getActivity();
+                if (fragmentActivity != null) {
+                    fragmentActivity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fl_content,new HelpFragment(),HelpFragment.TAG)
+                            .commitAllowingStateLoss();
+                }
                 break;
             case R.id.clear:
                 if (mCaptureBinder != null) {

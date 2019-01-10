@@ -100,6 +100,6 @@ public class CaptureEntryViewHolder extends RecyclerView.ViewHolder implements V
         if (mEntryTabDelegate != null) {
             mEntryTabDelegate.showHarEntry(mHarEntry);
         }
-        mBarView.setBackgroundColor(Color.GREEN);
+        mBarView.setBackgroundColor(0xD1115E7B);
     }
 }
