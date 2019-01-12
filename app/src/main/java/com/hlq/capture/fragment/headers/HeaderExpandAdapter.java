@@ -5,9 +5,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +12,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.hlq.capture.R;
+import com.hlq.capture.util.ViewUtil;
 
 import net.lightbody.bmp.core.har.HarNameValuePair;
-import net.lightbody.bmp.core.har.INameValue;
 
 import java.util.List;
 
@@ -38,9 +35,10 @@ class HeaderExpandAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildrenCount(int groupPosition) {
         if (groupPosition == 0) {
-            return mRequestHeader == null ? 0 : mRequestHeader.size();
+            return (mRequestHeader == null  || mRequestHeader.isEmpty() )? 0 : 1;
         } else if (groupPosition == 1){
-            return mResponseHeader == null ? 0 : mResponseHeader.size();
+            return (mResponseHeader == null  || mResponseHeader.isEmpty() )? 0 : 1;
+
         }
         return 0;
     }
@@ -51,11 +49,11 @@ class HeaderExpandAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public INameValue getChild(int groupPosition, int childPosition) {
+    public List<HarNameValuePair> getChild(int groupPosition, int childPosition) {
         if (groupPosition == 0) {
-           return mRequestHeader.get(childPosition);
+           return mRequestHeader;
         } else if (groupPosition == 1){
-            return mResponseHeader.get(childPosition);
+            return mResponseHeader;
         }
         return null;
     }
@@ -106,25 +104,13 @@ class HeaderExpandAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            TextView textView = new TextView(parent.getContext());
-            int dp_5 = parent.getResources().getDimensionPixelSize(R.dimen.dp_5);
-            textView.setPadding(dp_5,0,dp_5,0);
-            textView.setTextSize(13);
-            textView.setTextColor(0xff323232);
-            textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            convertView = textView;
+            convertView = ViewUtil.getContentTextView(parent.getContext());
         }
         TextView textView = (TextView) convertView;
-        onBindViewHolder(getChild(groupPosition,childPosition),textView);
+        ViewUtil.setNameValueSpan(textView,getChild(groupPosition, childPosition));
         return convertView;
     }
 
-    public void onBindViewHolder(INameValue nameValue ,TextView textView) {
-        String name = nameValue.getName();
-        SpannableString spanStr = new SpannableString(name + ": " + nameValue.getValue());
-        spanStr.setSpan(new ForegroundColorSpan(0xffFF4081),0, name.length()+1 , Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        textView.setText(spanStr);
-    }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {

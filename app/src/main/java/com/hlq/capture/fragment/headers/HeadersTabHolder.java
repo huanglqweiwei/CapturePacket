@@ -14,7 +14,7 @@ import net.lightbody.bmp.core.har.HarResponse;
  * Created by hlq on 2019/1/6 0006.
  */
 
-public class HeadersTabHolder implements TabHolder<HarEntry> {
+public class HeadersTabHolder implements TabHolder {
 
     private HeaderExpandAdapter mAdapter;
     private ExpandableListView mListView;
@@ -33,7 +33,7 @@ public class HeadersTabHolder implements TabHolder<HarEntry> {
     }
 
     @Override
-    public void onBindHolder(HarEntry harEntry) {
+    public void onBindHolder(HarEntry harEntry,String tabText) {
         HarRequest request = harEntry.getRequest();
         HarResponse response = harEntry.getResponse();
         mAdapter.setHeaders(request == null ? null :request.getHeaders(),response == null ? null :response.getHeaders());
