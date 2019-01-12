@@ -9,7 +9,7 @@ import java.io.Writer;
 
 public class Har {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private volatile HarLog log;
 

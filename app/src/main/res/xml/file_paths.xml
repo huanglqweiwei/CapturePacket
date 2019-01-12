@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths  xmlns:android="http://schemas.android.com/apk/res/android">
+  <external-path
+      name="external_files"
+      path="."/>
+  <external-path
+      name="camera_photos"
+      path="."/>
+  <external-path
+      name="files_root"
+      path="Android/data/com.hlq.capture/"/>
+  <external-path
+      name="external_storage_root"
+      path="."/>
+  <root-path
+      name="root_path"
+      path="." />
+</paths >

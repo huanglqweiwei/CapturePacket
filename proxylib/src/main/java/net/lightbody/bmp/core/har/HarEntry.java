@@ -2,8 +2,11 @@ package net.lightbody.bmp.core.har;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +22,7 @@ public class HarEntry {
     private volatile String serverIPAddress;
     private volatile String connection;
     private volatile String comment = "";
+    @JsonIgnore
     public HarCallback mHarCallback;
 
     public HarEntry() {
@@ -165,6 +169,9 @@ public class HarEntry {
         this.connection = connection;
     }
 
+    public void writeTo(File file) throws IOException {
+       Har.OBJECT_MAPPER.writeValue(file, this);
+    }
     @Override
     public String toString() {
         return "HarEntry{" +

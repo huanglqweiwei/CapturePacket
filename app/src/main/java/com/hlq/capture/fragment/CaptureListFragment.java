@@ -23,9 +23,12 @@ import android.widget.Toast;
 
 import com.hlq.capture.R;
 import com.hlq.capture.service.CaptureBinder;
+import com.hlq.capture.util.SPUtil;
 
 import net.lightbody.bmp.core.har.HarCallback;
 import net.lightbody.bmp.core.har.HarEntry;
+
+import java.io.File;
 
 /**
  * Created by hlq on 2018/12/22 0022.
@@ -143,6 +146,18 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 Toast toast = Toast.makeText(getActivity(), "开发中，敬请期待！", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
+                break;
+            case R.id.save_log:
+                if (mAdapter != null) {
+                    HarEntry harEntry = mAdapter.getSelectedHarEntry();
+                    if (harEntry != null) {
+                        File logs = new File(SPUtil.getCaptureDir(), "logs");
+                        if (!logs.exists() || !logs.isDirectory()) {
+                            logs.mkdir();
+                        }
+                        new SaveHarTask(this,new File(logs,"har_entry.txt")).execute(harEntry);
+                    }
+                }
                 break;
         }
         return true;

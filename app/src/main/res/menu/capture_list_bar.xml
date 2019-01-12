@@ -25,6 +25,10 @@
         android:title="@string/float_window"
         app:showAsAction="never" />
     <item
+        android:id="@+id/save_log"
+        android:title="@string/save_selected_log"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/exit"
         android:title="@string/exit"
         app:showAsAction="never" />

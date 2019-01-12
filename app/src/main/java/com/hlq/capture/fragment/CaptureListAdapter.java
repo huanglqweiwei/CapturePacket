@@ -112,6 +112,10 @@ class CaptureListAdapter extends RecyclerView.Adapter<CaptureEntryViewHolder> im
         }
     }
 
+    public HarEntry getSelectedHarEntry() {
+        return mEntryTabDelegate == null ? null : mEntryTabDelegate.mHarEntry;
+    }
+
     private class CaptureFilter extends Filter {
 
         @Override

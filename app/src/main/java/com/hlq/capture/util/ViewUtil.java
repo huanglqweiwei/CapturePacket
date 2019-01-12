@@ -43,8 +43,8 @@ public class ViewUtil {
             for (int i = 0; i < size; i++){
                 INameValue nameValue = nameValues.get(i);
                 name = nameValue.getName();
-                spanStr = new SpannableString(name + ": " + nameValue.getValue());
-                spanStr.setSpan(new ForegroundColorSpan(0xffFF4081),0, name.length()+1 , Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                spanStr = new SpannableString(name + " : " + nameValue.getValue());
+                spanStr.setSpan(new ForegroundColorSpan(0xffFF4081),0, name.length()+2 , Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 
                 ssb.append(spanStr);
                 if (i != size - 1) {

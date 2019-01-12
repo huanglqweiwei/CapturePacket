@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.security.KeyChain;
@@ -25,8 +24,6 @@ import com.hlq.capture.service.CaptureBinder;
 import com.hlq.capture.service.CaptureService;
 import com.hlq.capture.util.ProxyUtil;
 import com.hlq.capture.util.SPUtil;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements CaptureBinder.OnProxyStartedListener {
 
@@ -63,11 +60,7 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
             return;
         }
         Intent intent = new Intent(this, CaptureService.class);
-        File keyStoreDir = new File(Environment.getExternalStorageDirectory(), "capture");
-        if (!keyStoreDir.exists() || !keyStoreDir.isDirectory()) {
-            keyStoreDir.mkdir();
-        }
-        intent.putExtra(CaptureService.KEY_STORE_DIR,keyStoreDir.getAbsolutePath());
+        intent.putExtra(CaptureService.KEY_STORE_DIR,SPUtil.getCaptureDir().getAbsolutePath());
         mConn = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -88,13 +81,6 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
 
     }
 
-    private void installCertificate(byte[] cerBytes){
-        Intent intent = KeyChain.createInstallIntent();
-        intent.putExtra(KeyChain.EXTRA_CERTIFICATE, cerBytes);
-        intent.putExtra(KeyChain.EXTRA_NAME, "CapturePacket CA Certificate");
-        startActivityForResult(intent, REQUEST_INSTALL_CER);
-    }
-
     @Override
     public void onProxyStarted() {
         if (!mBinder.isProxyStarted()) {
@@ -109,7 +95,10 @@ public class MainActivity extends AppCompatActivity implements CaptureBinder.OnP
         if (!SPUtil.getBoolean(this,SPUtil.KEY_IS_INSTALL_CER,false)) {
             byte[] cerBytes = mBinder.getCerBytes();
             if (cerBytes != null) {
-                installCertificate(cerBytes);
+                Intent intent = KeyChain.createInstallIntent();
+                intent.putExtra(KeyChain.EXTRA_CERTIFICATE, cerBytes);
+                intent.putExtra(KeyChain.EXTRA_NAME, "CapturePacket CA Certificate");
+                startActivityForResult(intent, REQUEST_INSTALL_CER);
             }
         }
         boolean result = ProxyUtil.setProxy(this, CaptureService.PROXY_PORT);
