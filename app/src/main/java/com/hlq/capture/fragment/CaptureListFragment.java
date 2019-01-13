@@ -146,6 +146,9 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 toast.show();
                 break;
             case R.id.save_log:
+                if (mSearchView != null && mSearchView.hasFocus()) {
+                    mSearchView.clearFocus();
+                }
                 saveLog();
                 break;
         }
