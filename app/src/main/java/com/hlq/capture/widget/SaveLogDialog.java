@@ -40,7 +40,7 @@ public class SaveLogDialog extends DialogFragment implements DialogInterface.OnC
             if (time != null) {
                 String format = new SimpleDateFormat("yyyyMMdd'T'HH-mm-ss-SSS", Locale.CHINA).format(time);
                 mEditText.setText("har_"+format+".txt");
-                mEditText.setSelectAllOnFocus(true);
+                mEditText.setSelection(0,format.length()+4);
             }
         }
         return new AlertDialog.Builder(getActivity(), getTheme())

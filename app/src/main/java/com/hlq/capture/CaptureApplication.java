@@ -8,6 +8,6 @@ public class CaptureApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashReport.initCrashReport(getApplicationContext(), "bf984fa8b1", false);
+        CrashReport.initCrashReport(getApplicationContext(), "bf984fa8b1", BuildConfig.DEBUG);
     }
 }

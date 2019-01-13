@@ -30,7 +30,7 @@
             android:name="com.hlq.capture.service.CaptureService"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.hlq.capture"
+            android:authorities="${applicationId}"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
