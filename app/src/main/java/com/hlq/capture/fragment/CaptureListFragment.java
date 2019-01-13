@@ -23,12 +23,10 @@ import android.widget.Toast;
 
 import com.hlq.capture.R;
 import com.hlq.capture.service.CaptureBinder;
-import com.hlq.capture.util.SPUtil;
+import com.hlq.capture.widget.SaveLogDialog;
 
 import net.lightbody.bmp.core.har.HarCallback;
 import net.lightbody.bmp.core.har.HarEntry;
-
-import java.io.File;
 
 /**
  * Created by hlq on 2018/12/22 0022.
@@ -148,19 +146,22 @@ public class CaptureListFragment extends Fragment implements HarCallback, Toolba
                 toast.show();
                 break;
             case R.id.save_log:
-                if (mAdapter != null) {
-                    HarEntry harEntry = mAdapter.getSelectedHarEntry();
-                    if (harEntry != null) {
-                        File logs = new File(SPUtil.getCaptureDir(), "logs");
-                        if (!logs.exists() || !logs.isDirectory()) {
-                            logs.mkdir();
-                        }
-                        new SaveHarTask(this,new File(logs,"har_entry.txt")).execute(harEntry);
-                    }
-                }
+                saveLog();
                 break;
         }
         return true;
+    }
+
+    private void saveLog() {
+        if (mAdapter != null) {
+            HarEntry harEntry = mAdapter.getSelectedHarEntry();
+            if (harEntry != null) {
+                SaveLogDialog dialog = new SaveLogDialog();
+                dialog.setHarEntry(harEntry);
+                dialog.show(getChildFragmentManager(),SaveLogDialog.TAG);
+
+            }
+        }
     }
 
     @Override

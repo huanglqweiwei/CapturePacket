@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="18dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/et_file_name"
+        app:layout_constraintBottom_toBottomOf="@id/et_file_name"
+        android:textSize="14sp"
+        android:textColor="@color/text_main"
+        android:text="@string/file_name"
+        android:id="@+id/tv_title"/>
+    <android.support.v7.widget.AppCompatEditText
+        android:layout_width="0dp"
+        app:layout_constraintLeft_toRightOf="@id/tv_title"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:textColor="@color/text_main"
+        android:id="@+id/et_file_name"/>
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#aaa"
+        android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/et_file_name"
+        android:text="@string/file_path"/>
+
+</android.support.constraint.ConstraintLayout>

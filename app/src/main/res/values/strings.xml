@@ -25,4 +25,6 @@
         \n
     </string>
     <string name="save_selected_log">保存选中的Log</string>
+    <string name="file_name">文件名：</string>
+    <string name="file_path">存储路径：/sdcard/capture/logs/</string>
 </resources>

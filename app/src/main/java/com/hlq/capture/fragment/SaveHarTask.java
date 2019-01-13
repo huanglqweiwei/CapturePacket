@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 
@@ -23,18 +24,18 @@ import java.lang.ref.WeakReference;
 
 public class SaveHarTask extends AsyncTask<HarEntry,Void,File> {
 
-    private final WeakReference<CaptureListFragment> mFragmentRef;
+    private final WeakReference<Fragment> mFragmentRef;
     private File mOutFile;
     private ProgressDialog mPD;
 
-    SaveHarTask(CaptureListFragment fragment,File outFile){
+    public SaveHarTask(Fragment fragment, File outFile){
         mFragmentRef = new WeakReference<>(fragment);
         mOutFile = outFile;
     }
 
     @Override
     protected void onPreExecute() {
-        CaptureListFragment fragment = mFragmentRef.get();
+        Fragment fragment = mFragmentRef.get();
         if (fragment != null && fragment.isAdded()) {
             mPD = new ProgressDialog(fragment.getActivity());
             mPD.setCancelable(false);
@@ -59,7 +60,7 @@ public class SaveHarTask extends AsyncTask<HarEntry,Void,File> {
         if (mPD != null) {
             mPD.dismiss();
         }
-        CaptureListFragment fragment = mFragmentRef.get();
+        Fragment fragment = mFragmentRef.get();
         if (fragment != null && fragment.isAdded() &&fragment.getView() !=null) {
             Snackbar snackbar;
             if (file != null) {
