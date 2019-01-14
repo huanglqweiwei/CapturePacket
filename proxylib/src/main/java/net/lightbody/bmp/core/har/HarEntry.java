@@ -40,7 +40,7 @@ public class HarEntry {
         this.pageref = pageref;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     public Date getStartedDateTime() {
         return startedDateTime;
     }
