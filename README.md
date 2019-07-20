@@ -7,7 +7,8 @@ Android端网络抓包工具，可在手机端抓取HTTP/HTTPS网络数据，并
 ![概览](https://github.com/huanglqweiwei/CapturePacket/raw/master/screenshot/overview.png "概览")
 ![url过滤](https://github.com/huanglqweiwei/CapturePacket/raw/master/screenshot/filter_url.png "url过滤")
 ![Help页面](https://github.com/huanglqweiwei/CapturePacket/raw/master/screenshot/help.png "Help页面")
-
+## 下载体验
+https://www.pgyer.com/IqRI
 ## 使用方法
 见应用内[帮助页面](./screenshot/help.png)
 ## License
